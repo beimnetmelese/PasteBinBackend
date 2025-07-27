@@ -15,5 +15,13 @@ class SnippetViewSet(ModelViewSet):
     @action(detail=True, methods=["post"])
     def view_snippet(self, request, slug=None):
         snippet = self.get_object()
-        serializer = self.get_serializer(snippet, context={"request": request})
+        password = request.data.get('password')
+        serializer = self.get_serializer(
+            snippet,
+            context={
+                "request": request,
+                "password": password,
+                "is_explicit_view": True  # 👈 only here do we mark it viewed
+            }
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)

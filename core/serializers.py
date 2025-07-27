@@ -33,8 +33,10 @@ class SnippetSerializer(serializers.ModelSerializer):
         return snippet
 
     def get_decrypted(self, obj):
+        print("DEBUG:", obj.slug, "has_been_viewed =", obj.has_been_viewed)
         request = self.context.get('request')
         password = request.data.get('password') if request else None
+        is_explicit_view = self.context.get('is_explicit_view', False)
 
         if obj.is_expired():
             return "This paste has expired."
@@ -52,7 +54,8 @@ class SnippetSerializer(serializers.ModelSerializer):
         except Exception:
             return "Decryption failed. Paste may be corrupted or tampered."
 
-        if obj.one_time_view and not obj.has_been_viewed:
+        if obj.one_time_view and not obj.has_been_viewed and is_explicit_view:
+            print("Marking as viewed:", obj.slug)
             obj.has_been_viewed = True
             obj.save()
 
