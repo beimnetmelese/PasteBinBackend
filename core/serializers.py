@@ -52,7 +52,7 @@ class SnippetSerializer(serializers.ModelSerializer):
         except Exception:
             return "Decryption failed. Paste may be corrupted or tampered."
 
-        if obj.one_time_view:
+        if obj.one_time_view and not obj.has_been_viewed:
             obj.has_been_viewed = True
             obj.save()
 
